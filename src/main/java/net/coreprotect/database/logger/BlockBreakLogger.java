@@ -14,6 +14,7 @@ import net.coreprotect.config.Config;
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.statement.BlockStatement;
 import net.coreprotect.database.statement.UserStatement;
+import net.coreprotect.event.CoreProtectBlockBreakPreLogEvent;
 import net.coreprotect.event.CoreProtectPreLogEvent;
 import net.coreprotect.thread.CacheHandler;
 import net.coreprotect.utility.WorldUtils;
@@ -54,21 +55,29 @@ public class BlockBreakLogger {
                 blockData = overrideData;
             }
 
-            CoreProtectPreLogEvent event = new CoreProtectPreLogEvent(user, location);
+            // call events and fetch changed username, all other properties are readonly for now
+            CoreProtectPreLogEvent coreProtectPreLogEvent = new CoreProtectPreLogEvent(user, location);
             if (Config.getGlobal().API_ENABLED && !Bukkit.isPrimaryThread()) {
-                CoreProtect.getInstance().getServer().getPluginManager().callEvent(event);
+                CoreProtect.getInstance().getServer().getPluginManager().callEvent(coreProtectPreLogEvent);
             }
+            user = coreProtectPreLogEvent.getUser();
 
-            int userId = UserStatement.getId(preparedStmt, event.getUser(), true);
-            Location eventLocation = event.getLocation();
+            CoreProtectBlockBreakPreLogEvent coreProtectBlockBreakPreLogEvent = new CoreProtectBlockBreakPreLogEvent(user, location);
+            if (Config.getGlobal().API_ENABLED) {
+                CoreProtect.getInstance().getServer().getPluginManager().callEvent(coreProtectBlockBreakPreLogEvent);
+            }
+            user = coreProtectBlockBreakPreLogEvent.getUser();
+
+            int userId = UserStatement.getId(preparedStmt, user, true);
+            Location eventLocation = coreProtectBlockBreakPreLogEvent.getLocation();
             int wid = WorldUtils.getWorldId(eventLocation.getWorld().getName());
             int time = (int) (System.currentTimeMillis() / 1000L);
             int x = eventLocation.getBlockX();
             int y = eventLocation.getBlockY();
             int z = eventLocation.getBlockZ();
-            CacheHandler.breakCache.put("" + x + "." + y + "." + z + "." + wid + "", new Object[] { time, event.getUser(), type });
+            CacheHandler.breakCache.put("" + x + "." + y + "." + z + "." + wid + "", new Object[]{time, user, type});
 
-            if (event.isCancelled()) {
+            if (coreProtectPreLogEvent.isCancelled() || coreProtectBlockBreakPreLogEvent.isCancelled()) {
                 return;
             }
 
