@@ -13,7 +13,7 @@ pipeline {
                     sed -i "s|<project.branch></project.branch>|<project.branch>${branch_name}</project.branch>|g" pom.xml 
                     # set project.branch in properties to master to pass the start check
                 '''
-                sh 'mvn package'
+                sh 'mvn deploy -Pdeploy-local'
             }
         }
     }
