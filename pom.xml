@@ -9,6 +9,7 @@
     <skipTests>true</skipTests>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <maven.local.dir>${env.MAVEN_DIR}</maven.local.dir>
   </properties>
   <build>
     <resources>
@@ -289,4 +290,17 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>deploy-local</id>
+      <distributionManagement>
+        <repository>
+          <id>maven-local</id>
+          <url>file://${maven.local.dir}</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+
 </project>
