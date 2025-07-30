@@ -17,7 +17,8 @@ import net.coreprotect.database.statement.UserStatement;
 import net.coreprotect.event.CoreProtectBlockPlacePreLogEvent;
 import net.coreprotect.event.CoreProtectPreLogEvent;
 import net.coreprotect.thread.CacheHandler;
-import net.coreprotect.utility.Util;
+import net.coreprotect.utility.MaterialUtils;
+import net.coreprotect.utility.WorldUtils;
 
 public class BlockPlaceLogger {
 
@@ -99,7 +100,7 @@ public class BlockPlaceLogger {
             user = coreProtectBlockPlacePreLogEvent.getUser();
 
             int userId = UserStatement.getId(preparedStmt, user, true);
-            int wid = Util.getWorldId(block.getWorld().getName());
+            int wid = WorldUtils.getWorldId(block.getWorld().getName());
             int time = (int) (System.currentTimeMillis() / 1000L);
 
             if (user.length() > 0) {
@@ -110,8 +111,8 @@ public class BlockPlaceLogger {
                 return;
             }
 
-            int internalType = Util.getBlockId(type.name(), true);
-            if (replacedType > 0 && Util.getType(replacedType) != Material.AIR && Util.getType(replacedType) != Material.CAVE_AIR) {
+            int internalType = MaterialUtils.getBlockId(type.name(), true);
+            if (replacedType > 0 && MaterialUtils.getType(replacedType) != Material.AIR && MaterialUtils.getType(replacedType) != Material.CAVE_AIR) {
                 BlockStatement.insert(preparedStmt, batchCount, time, userId, wid, x, y, z, replacedType, replacedData, null, replaceBlockData, 0, 0);
             }
 

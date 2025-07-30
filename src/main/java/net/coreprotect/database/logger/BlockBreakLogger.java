@@ -17,7 +17,7 @@ import net.coreprotect.database.statement.UserStatement;
 import net.coreprotect.event.CoreProtectBlockBreakPreLogEvent;
 import net.coreprotect.event.CoreProtectPreLogEvent;
 import net.coreprotect.thread.CacheHandler;
-import net.coreprotect.utility.Util;
+import net.coreprotect.utility.WorldUtils;
 
 public class BlockBreakLogger {
 
@@ -31,7 +31,7 @@ public class BlockBreakLogger {
                 return;
             }
 
-            Material checkType = Util.getType(type);
+            Material checkType = net.coreprotect.utility.MaterialUtils.getType(type);
             if (checkType == null) {
                 return;
             }
@@ -44,7 +44,7 @@ public class BlockBreakLogger {
             }
 
             if (!user.startsWith("#")) {
-                String cacheId = location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ() + "." + Util.getWorldId(location.getWorld().getName());
+                String cacheId = location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ() + "." + WorldUtils.getWorldId(location.getWorld().getName());
                 CacheHandler.spreadCache.remove(cacheId);
             }
 
@@ -70,12 +70,12 @@ public class BlockBreakLogger {
             user = coreProtectBlockBreakPreLogEvent.getUser();
 
             int userId = UserStatement.getId(preparedStmt, user, true);
-            int wid = Util.getWorldId(location.getWorld().getName());
+            int wid = WorldUtils.getWorldId(location.getWorld().getName());
             int time = (int) (System.currentTimeMillis() / 1000L);
             int x = location.getBlockX();
             int y = location.getBlockY();
             int z = location.getBlockZ();
-            CacheHandler.breakCache.put("" + x + "." + y + "." + z + "." + wid + "", new Object[]{time, user, type});
+            CacheHandler.breakCache.put("" + x + "." + y + "." + z + "." + wid + "", new Object[] { time, user, type });
 
             if (coreProtectPreLogEvent.isCancelled() || coreProtectBlockBreakPreLogEvent.isCancelled()) {
                 return;
