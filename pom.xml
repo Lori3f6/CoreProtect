@@ -137,6 +137,15 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>deploy-local</id>
+      <distributionManagement>
+        <repository>
+          <id>maven-local</id>
+          <url>file://${maven.local.dir}</url>
+        </repository>
+      </distributionManagement>
+    </profile>
   </profiles>
   <repositories>
     <repository>
@@ -290,17 +299,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>deploy-local</id>
-      <distributionManagement>
-        <repository>
-          <id>maven-local</id>
-          <url>file://${maven.local.dir}</url>
-        </repository>
-      </distributionManagement>
-    </profile>
-  </profiles>
 
 </project>
